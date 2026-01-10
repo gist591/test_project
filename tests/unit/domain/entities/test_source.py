@@ -1,11 +1,11 @@
 import pytest
-from src.domain.entities import OperatorSource
+from src.domain.entities import Source
 
 
-class TextOperatorSource:
+class TestSource:
     @pytest.fixture
-    def source(self) -> OperatorSource:
-        return OperatorSource(
+    def source(self) -> Source:
+        return Source(
             id=1,
             name="telegram_bot",
         )
@@ -13,5 +13,5 @@ class TextOperatorSource:
     def test_create_source(self, source) -> None:
         """The test create source with name"""
         assert source.id == 1
-        assert source.name == "telegram_bog"
+        assert source.name == "telegram_bot"
         assert source.is_active is True

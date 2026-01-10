@@ -3,6 +3,7 @@ from .lead import Lead
 from .operator_source import OperatorSource
 from .contact import Contact
 from .contact_status import ContactStatus
+from .source import Source
 
 
 __all__ = [
@@ -11,4 +12,5 @@ __all__ = [
     'OperatorSource',
     'Contact',
     'ContactStatus',
+    'Source',
 ]

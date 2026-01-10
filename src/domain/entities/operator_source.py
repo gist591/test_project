@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class OperatorSource:
-    """Source/bot - the channel from which requests come"""
-    id: Optional[int]
-    name: str
-    is_active: bool = True
+    """Operator's connection to the source and weight"""
+    operator_id: int
+    source_id: int
+    weight: int
