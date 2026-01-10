@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Optional
 
-from domain.repositories import BaseRepository
-from domain.entities import Lead
+from src.domain.repositories import BaseRepository
+from src.domain.entities import Lead
 
 class LeadRepository(BaseRepository[Lead]):
     @abstractmethod

@@ -88,7 +88,7 @@ class LeadDistributionService:
         source_id: int
     ) -> List[Tuple[Operator, int]]:
         """Get available operators with weights"""
-        operator_sources = self._operator_source_repo.get_by_soucre_id(source_id)
+        operator_sources = self._operator_source_repo.get_by_source_id(source_id)
         contacts = self._contact_repo.get_all()
 
         result = list()
