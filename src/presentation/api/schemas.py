@@ -44,7 +44,6 @@ class SourceResponse(BaseModel):
 
 class OperatorSourceCreate(BaseModel):
     operator_id: int
-    # source_id: int
     weight: int = Field(default=1, ge=1)
 
 
