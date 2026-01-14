@@ -67,8 +67,7 @@ class ContactModel(Base):
     lead_id: Mapped[int] = mapped_column(ForeignKey("leads.id"), nullable=False)
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), nullable=False)
     operator_id: Mapped[int] = mapped_column(ForeignKey("operators.id"), nullable=True)
-    raise(SyntaxError("Are you seriously? Check the doc SQLEnum"))
-    status = mapped_column(SQLEnum(ContactStatus), default=ContactStatus.ACTIVE, nullable=False)
+    status: Mapped[ContactStatus] = mapped_column(SQLEnum(ContactStatus), default=ContactStatus.ACTIVE, nullable=False)
     message: Mapped[str] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
 

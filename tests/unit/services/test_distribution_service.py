@@ -150,44 +150,42 @@ class TestSelectOperator:
         operator_repo,
         operator_source_repo,
     ) -> None:
-       op1 = operator_repo.add(
-           Operator(
-               id=None,
-               name="Test name1",
-               max_load=100
-           )
-       )
-       op2 = operator_repo.add(
-           Operator(
-               id=None,
-               name="Test name2",
-               max_load=100
-           )
-       )
-       operator_source_repo.add(
-           OperatorSource(
-               operator_id=op1.id,
-               source_id=1,
-               weight=10
-           )
-       )
-       operator_source_repo.add(
-           OperatorSource(
-               operator_id=op2.id,
-               source_id=1,
-               weight=30
-           )
-       )
+        op1 = operator_repo.add(
+            Operator(
+                id=None,
+                name="Test name1",
+                max_load=100
+            )
+        )
+        op2 = operator_repo.add(
+            Operator(
+                id=None,
+                name="Test name2",
+                max_load=100
+            )
+        )
+        operator_source_repo.add(
+            OperatorSource(
+                operator_id=op1.id,
+                source_id=1,
+                weight=10
+            )
+        )
+        operator_source_repo.add(
+            OperatorSource(
+                operator_id=op2.id,
+                source_id=1,
+                weight=30
+            )
+        )
 
-       selections = {op1.id: 0, op2.id: 0}
-       for _ in range(100):
-           result = service.select_operator_for_source(
-               source_id=1
-           )
-           selections[result.id] += 1
+        selections = {op1.id: 0, op2.id: 0}
+        for _ in range(100):
+            result = service.select_operator_for_source(source_id=1)
+            selections[result.id] += 1
 
-        #assert selections[op2.id] > selections[op1.id]
-        #assert selections[op2.id] >= 50
+        assert selections[op2.id] > selections[op1.id]
+        assert selections[op2.id] >= 50
 
     def test_skips_operator_at_capactity(
         self,
