@@ -1,13 +1,14 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.domain.entities import Operator
 from src.infra.db import get_db
 from src.infra.repositories import SQLAlchemyOperatorRepository
-from src.domain.entities import Operator
-from src.presentation.api.schemas import OperatorCreate, OperatorUpdate, OperatorResponse
-
+from src.presentation.api.schemas import (
+    OperatorCreate,
+    OperatorResponse,
+    OperatorUpdate,
+)
 
 router = APIRouter(prefix="/operators", tags=["Operators"])
 
@@ -31,7 +32,7 @@ def create_operator(data: OperatorCreate, db: Session = Depends(get_db)):
     )
 
 
-@router.get("/", response_model=List[OperatorResponse])
+@router.get("/", response_model=list[OperatorResponse])
 def list_operators(db: Session = Depends(get_db)):
     repo = SQLAlchemyOperatorRepository(db)
     return [
@@ -62,7 +63,9 @@ def get_operator(operator_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{operator_id}", response_model=OperatorResponse)
-def update_operator(operator_id: int, data: OperatorUpdate, db: Session = Depends(get_db)):
+def update_operator(
+    operator_id: int, data: OperatorUpdate, db: Session = Depends(get_db)
+):
     repo = SQLAlchemyOperatorRepository(db)
     op = repo.get_by_id(operator_id)
     if not op:

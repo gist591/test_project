@@ -9,6 +9,7 @@ class TestOperator:
         return Operator(id=1, name="Test name")
 
     """Tests for entity Operator"""
+
     def test_create_operator_with_name(self, operator) -> None:
         """The operator must be created with name"""
         assert operator.id == 1
@@ -22,7 +23,7 @@ class TestOperator:
 
     def test_can_accept_lead_when_active_and_has_capactiry(self, operator) -> None:
         """The active operator without leads may accept lead"""
-        operator.current_load=5
+        operator.current_load = 5
         assert operator.can_accept_lead() is True
 
     def test_cannot_accept_lead_when_inactive(self, operator) -> None:

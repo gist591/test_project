@@ -1,7 +1,6 @@
 import pytest
 
-from src.domain.entities import Contact
-from src.domain.entities import ContactStatus
+from src.domain.entities import Contact, ContactStatus
 
 
 class TestConact:

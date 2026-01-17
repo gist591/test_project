@@ -2,8 +2,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from src.domain.entities import ContactStatus, Operator
 from src.infra.db.models import Base
-from src.domain.entities import Operator, ContactStatus
 
 
 @pytest.fixture
@@ -11,17 +11,18 @@ def db_session():
     """Create in-memory DB for everyone test"""
     engine = create_engine("sqlite:///:memory:")
     Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    SessionLocal = sessionmaker(bind=engine)
+    session = SessionLocal()
     yield session
     session.close()
 
 
 class TestSQLAlchemyOperatorRepository:
-
     def test_add_and_get_operator(self, db_session):
         """Add and get operator"""
-        from src.infra.repositories.sqlalchemy_operator_repo import SQLAlchemyOperatorRepository
+        from src.infra.repositories.sqlalchemy_operator_repo import (
+            SQLAlchemyOperatorRepository,
+        )
 
         repo = SQLAlchemyOperatorRepository(db_session)
         operator = Operator(id=None, name="Иван", is_active=True, max_load=10)
@@ -35,11 +36,19 @@ class TestSQLAlchemyOperatorRepository:
 
     def test_get_available_for_source_filters_by_load(self, db_session):
         """The test filtering operators by max_load"""
-        from src.infra.repositories.sqlalchemy_operator_repo import SQLAlchemyOperatorRepository
-        from src.infra.repositories.sqlalchemy_source_repo import SQLAlchemySourceRepository
-        from src.infra.repositories.sqlalchemy_operator_source_repo import SQLAlchemyOperatorSourceRepository
-        from src.infra.repositories.sqlalchemy_contact_repo import SQLAlchemyContactRepository
-        from src.domain.entities import Source, OperatorSource, Contact
+        from src.domain.entities import Contact, OperatorSource, Source
+        from src.infra.repositories.sqlalchemy_contact_repo import (
+            SQLAlchemyContactRepository,
+        )
+        from src.infra.repositories.sqlalchemy_operator_repo import (
+            SQLAlchemyOperatorRepository,
+        )
+        from src.infra.repositories.sqlalchemy_operator_source_repo import (
+            SQLAlchemyOperatorSourceRepository,
+        )
+        from src.infra.repositories.sqlalchemy_source_repo import (
+            SQLAlchemySourceRepository,
+        )
 
         op_repo = SQLAlchemyOperatorRepository(db_session)
         source_repo = SQLAlchemySourceRepository(db_session)
@@ -55,12 +64,29 @@ class TestSQLAlchemyOperatorRepository:
         os_repo.add(OperatorSource(operator_id=op2.id, source_id=source.id, weight=20))
 
         from src.infra.db.models import LeadModel
+
         lead = LeadModel(external_id="test_lead")
         db_session.add(lead)
         db_session.commit()
 
-        contact_repo.add(Contact(id=None, lead_id=lead.id, source_id=source.id, operator_id=op1.id, status=ContactStatus.ACTIVE))
-        contact_repo.add(Contact(id=None, lead_id=lead.id, source_id=source.id, operator_id=op1.id, status=ContactStatus.ACTIVE))
+        contact_repo.add(
+            Contact(
+                id=None,
+                lead_id=lead.id,
+                source_id=source.id,
+                operator_id=op1.id,
+                status=ContactStatus.ACTIVE,
+            )
+        )
+        contact_repo.add(
+            Contact(
+                id=None,
+                lead_id=lead.id,
+                source_id=source.id,
+                operator_id=op1.id,
+                status=ContactStatus.ACTIVE,
+            )
+        )
 
         available = op_repo.get_available_for_source(source.id)
 

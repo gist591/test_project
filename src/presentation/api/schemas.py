@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+
 from pydantic import BaseModel, Field
 
 from src.domain.entities import ContactStatus
@@ -12,9 +12,9 @@ class OperatorCreate(BaseModel):
 
 
 class OperatorUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=100)
-    is_active: Optional[bool] = None
-    max_load: Optional[int] = Field(None, ge=1)
+    name: str | None = Field(None, min_length=1, max_length=100)
+    is_active: bool | None = None
+    max_load: int | None = Field(None, ge=1)
 
 
 class OperatorResponse(BaseModel):
@@ -58,13 +58,13 @@ class OperatorSourceResponse(BaseModel):
 
 class SourceDistributionResponse(BaseModel):
     source: SourceResponse
-    operators: List[OperatorSourceResponse]
+    operators: list[OperatorSourceResponse]
 
 
 class LeadResponse(BaseModel):
     id: int
     external_id: str
-    name: Optional[str]
+    name: str | None
     created_at: datetime
 
     class Config:
@@ -74,17 +74,17 @@ class LeadResponse(BaseModel):
 class ContactCreate(BaseModel):
     external_lead_id: str = Field(..., description="external lead's id")
     source_id: int
-    message: Optional[str] = None
-    lead_name: Optional[str] = None
+    message: str | None = None
+    lead_name: str | None = None
 
 
 class ContactResponse(BaseModel):
     id: int
     lead_id: int
     source_id: int
-    operator_id: Optional[int]
+    operator_id: int | None
     status: ContactStatus
-    message: Optional[str]
+    message: str | None
     created_at: datetime
 
     class Config:
@@ -94,9 +94,9 @@ class ContactResponse(BaseModel):
 class ContactDetailResponse(BaseModel):
     contact: ContactResponse
     lead: LeadResponse
-    operator: Optional[OperatorResponse]
+    operator: OperatorResponse | None
 
 
 class LeadWithContactsResponse(BaseModel):
     lead: LeadResponse
-    contacts: List[ContactResponse]
+    contacts: list[ContactResponse]

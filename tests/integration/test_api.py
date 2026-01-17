@@ -12,16 +12,17 @@ def client(tmp_path):
     db_file = tmp_path / "test.db"
     engine = create_engine(f"sqlite:///{db_file}")
     Base.metadata.create_all(engine)
-    TestSession = sessionmaker(bind=engine)
+    test_session = sessionmaker(bind=engine)
 
     def override_get_db():
-        db = TestSession()
+        db = test_session()
         try:
             yield db
         finally:
             db.close()
 
     from main import app
+
     app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(app) as c:
@@ -31,12 +32,8 @@ def client(tmp_path):
 
 
 class TestOperatorsAPI:
-
     def test_create_operator(self, client):
-        response = client.post("/operators/", json={
-            "name": "Иван",
-            "max_load": 5
-        })
+        response = client.post("/operators/", json={"name": "Иван", "max_load": 5})
 
         assert response.status_code == 201
         data = response.json()
@@ -63,12 +60,13 @@ class TestOperatorsAPI:
         assert response.json()["name"] == "Иван"
 
     def test_update_operator(self, client):
-        created = client.post("/operators/", json={"name": "Иван", "max_load": 5}).json()
+        created = client.post(
+            "/operators/", json={"name": "Иван", "max_load": 5}
+        ).json()
 
-        response = client.patch(f"/operators/{created['id']}", json={
-            "is_active": False,
-            "max_load": 10
-        })
+        response = client.patch(
+            f"/operators/{created['id']}", json={"is_active": False, "max_load": 10}
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -77,7 +75,6 @@ class TestOperatorsAPI:
 
 
 class TestSourcesAPI:
-
     def test_create_source(self, client):
         response = client.post("/sources/", json={"name": "telegram_bot"})
 
@@ -97,10 +94,10 @@ class TestSourcesAPI:
         op = client.post("/operators/", json={"name": "Op1"}).json()
         source = client.post("/sources/", json={"name": "telegram"}).json()
 
-        response = client.post(f"/sources/{source['id']}/operators", json={
-            "operator_id": op["id"],
-            "weight": 30
-        })
+        response = client.post(
+            f"/sources/{source['id']}/operators",
+            json={"operator_id": op["id"], "weight": 30},
+        )
 
         assert response.status_code == 201
         assert response.json()["weight"] == 30
@@ -110,8 +107,14 @@ class TestSourcesAPI:
         op2 = client.post("/operators/", json={"name": "Op2"}).json()
         source = client.post("/sources/", json={"name": "telegram"}).json()
 
-        client.post(f"/sources/{source['id']}/operators", json={"operator_id": op1["id"], "weight": 10})
-        client.post(f"/sources/{source['id']}/operators", json={"operator_id": op2["id"], "weight": 30})
+        client.post(
+            f"/sources/{source['id']}/operators",
+            json={"operator_id": op1["id"], "weight": 10},
+        )
+        client.post(
+            f"/sources/{source['id']}/operators",
+            json={"operator_id": op2["id"], "weight": 30},
+        )
 
         response = client.get(f"/sources/{source['id']}/distribution")
 
@@ -125,16 +128,19 @@ class TestContactsAPI:
     def test_create_contact_assigns_operator(self, client):
         op = client.post("/operators/", json={"name": "Иван", "max_load": 10}).json()
         source = client.post("/sources/", json={"name": "telegram"}).json()
-        client.post(f"/sources/{source['id']}/operators", json={
-            "operator_id": op["id"],
-            "weight": 10
-        })
+        client.post(
+            f"/sources/{source['id']}/operators",
+            json={"operator_id": op["id"], "weight": 10},
+        )
 
-        response = client.post("/contacts/", json={
-            "external_lead_id": "tg_123456",
-            "source_id": source["id"],
-            "message": "Привет!"
-        })
+        response = client.post(
+            "/contacts/",
+            json={
+                "external_lead_id": "tg_123456",
+                "source_id": source["id"],
+                "message": "Привет!",
+            },
+        )
 
         assert response.status_code == 201
         data = response.json()
@@ -146,10 +152,9 @@ class TestContactsAPI:
     def test_create_contact_unassigned_when_no_operators(self, client):
         source = client.post("/sources/", json={"name": "telegram"}).json()
 
-        response = client.post("/contacts/", json={
-            "external_lead_id": "tg_999",
-            "source_id": source["id"]
-        })
+        response = client.post(
+            "/contacts/", json={"external_lead_id": "tg_999", "source_id": source["id"]}
+        )
 
         assert response.status_code == 201
         data = response.json()
@@ -161,11 +166,23 @@ class TestContactsAPI:
         op = client.post("/operators/", json={"name": "Op1"}).json()
         source1 = client.post("/sources/", json={"name": "telegram"}).json()
         source2 = client.post("/sources/", json={"name": "whatsapp"}).json()
-        client.post(f"/sources/{source1['id']}/operators", json={"operator_id": op["id"], "weight": 10})
-        client.post(f"/sources/{source2['id']}/operators", json={"operator_id": op["id"], "weight": 10})
+        client.post(
+            f"/sources/{source1['id']}/operators",
+            json={"operator_id": op["id"], "weight": 10},
+        )
+        client.post(
+            f"/sources/{source2['id']}/operators",
+            json={"operator_id": op["id"], "weight": 10},
+        )
 
-        client.post("/contacts/", json={"external_lead_id": "tg_123", "source_id": source1["id"]})
-        client.post("/contacts/", json={"external_lead_id": "tg_123", "source_id": source2["id"]})
+        client.post(
+            "/contacts/",
+            json={"external_lead_id": "tg_123", "source_id": source1["id"]},
+        )
+        client.post(
+            "/contacts/",
+            json={"external_lead_id": "tg_123", "source_id": source2["id"]},
+        )
 
         leads = client.get("/leads/").json()
         assert len(leads) == 1
@@ -175,8 +192,12 @@ class TestContactsAPI:
 
     def test_list_contacts(self, client):
         source = client.post("/sources/", json={"name": "telegram"}).json()
-        client.post("/contacts/", json={"external_lead_id": "tg_1", "source_id": source["id"]})
-        client.post("/contacts/", json={"external_lead_id": "tg_2", "source_id": source["id"]})
+        client.post(
+            "/contacts/", json={"external_lead_id": "tg_1", "source_id": source["id"]}
+        )
+        client.post(
+            "/contacts/", json={"external_lead_id": "tg_2", "source_id": source["id"]}
+        )
 
         response = client.get("/contacts/")
 
@@ -185,11 +206,14 @@ class TestContactsAPI:
 
 
 class TestLeadsAPI:
-
     def test_list_leads(self, client):
         source = client.post("/sources/", json={"name": "telegram"}).json()
-        client.post("/contacts/", json={"external_lead_id": "tg_1", "source_id": source["id"]})
-        client.post("/contacts/", json={"external_lead_id": "tg_2", "source_id": source["id"]})
+        client.post(
+            "/contacts/", json={"external_lead_id": "tg_1", "source_id": source["id"]}
+        )
+        client.post(
+            "/contacts/", json={"external_lead_id": "tg_2", "source_id": source["id"]}
+        )
 
         response = client.get("/leads/")
 
@@ -198,11 +222,14 @@ class TestLeadsAPI:
 
     def test_get_lead_with_contacts(self, client):
         source = client.post("/sources/", json={"name": "telegram"}).json()
-        client.post("/contacts/", json={
-            "external_lead_id": "tg_555",
-            "source_id": source["id"],
-            "lead_name": "Пётр"
-        })
+        client.post(
+            "/contacts/",
+            json={
+                "external_lead_id": "tg_555",
+                "source_id": source["id"],
+                "lead_name": "Пётр",
+            },
+        )
 
         leads = client.get("/leads/").json()
 

@@ -1,23 +1,20 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from src.domain.entities import OperatorSource, Source
 from src.infra.db import get_db
 from src.infra.repositories import (
-    SQLAlchemySourceRepository,
     SQLAlchemyOperatorRepository,
     SQLAlchemyOperatorSourceRepository,
+    SQLAlchemySourceRepository,
 )
-from src.domain.entities import Source, OperatorSource
 from src.presentation.api.schemas import (
-    SourceCreate,
-    SourceResponse,
     OperatorSourceCreate,
     OperatorSourceResponse,
+    SourceCreate,
     SourceDistributionResponse,
+    SourceResponse,
 )
-
 
 router = APIRouter(prefix="/sources", tags=["Sources"])
 
@@ -30,7 +27,7 @@ def create_source(data: SourceCreate, db: Session = Depends(get_db)):
     return SourceResponse(id=created.id, name=created.name, is_active=created.is_active)
 
 
-@router.get("/", response_model=List[SourceResponse])
+@router.get("/", response_model=list[SourceResponse])
 def list_sources(db: Session = Depends(get_db)):
     repo = SQLAlchemySourceRepository(db)
     return [
@@ -48,7 +45,9 @@ def get_source(source_id: int, db: Session = Depends(get_db)):
     return SourceResponse(id=source.id, name=source.name, is_active=source.is_active)
 
 
-@router.post("/{source_id}/operators", response_model=OperatorSourceResponse, status_code=201)
+@router.post(
+    "/{source_id}/operators", response_model=OperatorSourceResponse, status_code=201
+)
 def assign_operator_to_source(
     source_id: int,
     data: OperatorSourceCreate,
@@ -87,7 +86,9 @@ def get_source_distribution(source_id: int, db: Session = Depends(get_db)):
 
     assignments = os_repo.get_by_source_id(source_id)
     return SourceDistributionResponse(
-        source=SourceResponse(id=source.id, name=source.name, is_active=source.is_active),
+        source=SourceResponse(
+            id=source.id, name=source.name, is_active=source.is_active
+        ),
         operators=[
             OperatorSourceResponse(
                 operator_id=a.operator_id,

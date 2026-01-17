@@ -53,10 +53,11 @@ select = [
     "Q",      # flake8-quotes
     "RET",    # flake8-return
     "SIM",    # flake8-simplify
-    "PTH",    # flake8-use-pathlib
+    "PTH",    # ппflake8-use-pathlib
     "ERA",    # flake8-eradicate
     "PL",     # pylint
     "RUF",    # ruff-specific
+    "PLR",
 ]
 
 ignore = [
@@ -68,10 +69,11 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401", "F403"]
-"tests/*" = ["T20", "S101"]
+"tests/*" = ["T20", "S101", "PLR2004", "PLC0415", "N806",]
 "main.py" = ["T201"]
 "scripts/*" = ["T201"]
 "*/api/routers/*.py" = ["B008"]
+"src/presentation/api/**" = ["B008"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["src"]

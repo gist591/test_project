@@ -2,10 +2,10 @@ from fastapi import FastAPI
 
 from src.infra.db import init_db
 from src.presentation.api import (
-    operators_router,
-    sources_router,
     contacts_router,
     leads_router,
+    operators_router,
+    sources_router,
 )
 
 app = FastAPI(

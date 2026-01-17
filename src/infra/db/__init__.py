@@ -1,5 +1,12 @@
-from .connection import engine, SessionLocal, get_db, DATABASE_URL
-from .models import Base, OperatorModel, LeadModel, SourceModel, OperatorSourceModel, ContactModel
+from .connection import DATABASE_URL, SessionLocal, engine, get_db
+from .models import (
+    Base,
+    ContactModel,
+    LeadModel,
+    OperatorModel,
+    OperatorSourceModel,
+    SourceModel,
+)
 
 
 def init_db():
@@ -7,15 +14,15 @@ def init_db():
 
 
 __all__ = [
-    "engine",
-    "SessionLocal",
-    "get_db",
-    "init_db",
     "DATABASE_URL",
     "Base",
-    "OperatorModel",
-    "LeadModel",
-    "SourceModel",
-    "OperatorSourceModel",
     "ContactModel",
+    "LeadModel",
+    "OperatorModel",
+    "OperatorSourceModel",
+    "SessionLocal",
+    "SourceModel",
+    "engine",
+    "get_db",
+    "init_db",
 ]

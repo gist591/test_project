@@ -1,23 +1,20 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.infra.db import get_db
 from src.infra.repositories import (
+    SQLAlchemyContactRepository,
     SQLAlchemyLeadRepository,
     SQLAlchemyOperatorRepository,
-    SQLAlchemyContactRepository,
 )
+from src.presentation.api.dependencies import get_distribution_service
 from src.presentation.api.schemas import (
     ContactCreate,
-    ContactResponse,
     ContactDetailResponse,
+    ContactResponse,
     LeadResponse,
     OperatorResponse,
 )
-from src.presentation.api.dependencies import get_distribution_service
-
 
 router = APIRouter(prefix="/contacts", tags=["Contacts"])
 
@@ -37,10 +34,12 @@ def register_contact(data: ContactCreate, db: Session = Depends(get_db)):
             lead_name=data.lead_name,
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
 
     lead = lead_repo.get_by_id(contact.lead_id)
-    operator = operator_repo.get_by_id(contact.operator_id) if contact.operator_id else None
+    operator = (
+        operator_repo.get_by_id(contact.operator_id) if contact.operator_id else None
+    )
 
     return ContactDetailResponse(
         contact=ContactResponse(
@@ -64,11 +63,13 @@ def register_contact(data: ContactCreate, db: Session = Depends(get_db)):
             is_active=operator.is_active,
             max_load=operator.max_load,
             current_load=operator.current_load,
-        ) if operator else None,
+        )
+        if operator
+        else None,
     )
 
 
-@router.get("/", response_model=List[ContactResponse])
+@router.get("/", response_model=list[ContactResponse])
 def list_contacts(db: Session = Depends(get_db)):
     repo = SQLAlchemyContactRepository(db)
     return [

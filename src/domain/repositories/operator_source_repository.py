@@ -1,17 +1,16 @@
 from abc import abstractmethod
-from typing import List
 
-from src.domain.repositories import BaseRepository
 from src.domain.entities import OperatorSource
+from src.domain.repositories import BaseRepository
 
 
 class OperatorSourceRepository(BaseRepository[OperatorSource]):
     @abstractmethod
-    def get_by_source_id(self, source_id: int) -> List[OperatorSource]:
+    def get_by_source_id(self, source_id: int) -> list[OperatorSource]:
         pass
 
     @abstractmethod
-    def get_by_operator_id(self, operator_id: int) -> List[OperatorSource]:
+    def get_by_operator_id(self, operator_id: int) -> list[OperatorSource]:
         pass
 
     @abstractmethod

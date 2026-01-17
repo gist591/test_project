@@ -1,16 +1,11 @@
 from datetime import datetime
-from enum import Enum
 
-from sqlalchemy import ForeignKey, Enum as SQLEnum
-from sqlalchemy.orm import (
-    mapped_column,
-    relationship,
-    declarative_base
-)
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import declarative_base, mapped_column, relationship
 from sqlalchemy.orm.base import Mapped
 
 from src.domain.entities import ContactStatus
-
 
 Base = declarative_base()
 
@@ -41,7 +36,7 @@ class LeadModel(Base):
 class SourceModel(Base):
     __tablename__ = "sources"
 
-    id: Mapped[int]  = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(unique=True, nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
 
@@ -52,7 +47,9 @@ class SourceModel(Base):
 class OperatorSourceModel(Base):
     __tablename__ = "operator_sources"
 
-    operator_id: Mapped[int] = mapped_column(ForeignKey("operators.id"), primary_key=True)
+    operator_id: Mapped[int] = mapped_column(
+        ForeignKey("operators.id"), primary_key=True
+    )
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), primary_key=True)
     weight: Mapped[int] = mapped_column(nullable=False, default=1)
 
@@ -67,7 +64,9 @@ class ContactModel(Base):
     lead_id: Mapped[int] = mapped_column(ForeignKey("leads.id"), nullable=False)
     source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), nullable=False)
     operator_id: Mapped[int] = mapped_column(ForeignKey("operators.id"), nullable=True)
-    status: Mapped[ContactStatus] = mapped_column(SQLEnum(ContactStatus), default=ContactStatus.ACTIVE, nullable=False)
+    status: Mapped[ContactStatus] = mapped_column(
+        SQLEnum(ContactStatus), default=ContactStatus.ACTIVE, nullable=False
+    )
     message: Mapped[str] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now, nullable=False)
 

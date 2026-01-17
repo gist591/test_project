@@ -1,27 +1,28 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.infra.db import get_db
-from src.infra.repositories import SQLAlchemyLeadRepository, SQLAlchemyContactRepository
-from src.presentation.api.schemas import LeadResponse, LeadWithContactsResponse, ContactResponse
-
+from src.infra.repositories import SQLAlchemyContactRepository, SQLAlchemyLeadRepository
+from src.presentation.api.schemas import (
+    ContactResponse,
+    LeadResponse,
+    LeadWithContactsResponse,
+)
 
 router = APIRouter(prefix="/leads", tags=["Leads"])
 
 
-@router.get("/", response_model=List[LeadResponse])
+@router.get("/", response_model=list[LeadResponse])
 def list_leads(db: Session = Depends(get_db)):
     repo = SQLAlchemyLeadRepository(db)
     return [
         LeadResponse(
-            id=l.id,
-            external_id=l.external_id,
-            name=l.name,
-            created_at=l.created_at,
+            id=lead.id,
+            external_id=lead.external_id,
+            name=lead.name,
+            created_at=lead.created_at,
         )
-        for l in repo.get_all()
+        for lead in repo.get_all()
     ]
 
 

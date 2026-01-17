@@ -1,16 +1,10 @@
-from src.domain.entities import (
-    Operator,
-    Lead,
-    Source,
-    Contact,
-    OperatorSource
-)
+from src.domain.entities import Contact, Lead, Operator, OperatorSource, Source
 from src.infra.db.models import (
-    OperatorModel,
-    LeadModel,
-    SourceModel,
     ContactModel,
-    OperatorSourceModel
+    LeadModel,
+    OperatorModel,
+    OperatorSourceModel,
+    SourceModel,
 )
 
 

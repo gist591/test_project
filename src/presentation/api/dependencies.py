@@ -1,14 +1,13 @@
 from sqlalchemy.orm import Session
 
-from src.infra.db import get_db
-from src.infra.repositories import (
-    SQLAlchemyOperatorRepository,
-    SQLAlchemyLeadRepository,
-    SQLAlchemySourceRepository,
-    SQLAlchemyContactRepository,
-    SQLAlchemyOperatorSourceRepository,
-)
 from src.app.services import LeadDistributionService
+from src.infra.repositories import (
+    SQLAlchemyContactRepository,
+    SQLAlchemyLeadRepository,
+    SQLAlchemyOperatorRepository,
+    SQLAlchemyOperatorSourceRepository,
+    SQLAlchemySourceRepository,
+)
 
 
 def get_operator_repo(db: Session):

@@ -1,17 +1,11 @@
 import random
-from typing import List, Optional, Tuple
 
 from src.domain.entities import Contact, ContactStatus, Lead, Operator
 
 
 class LeadDistributionService:
     def __init__(
-        self,
-        operator_repo,
-        lead_repo,
-        source_repo,
-        contact_repo,
-        operator_source_repo
+        self, operator_repo, lead_repo, source_repo, contact_repo, operator_source_repo
     ) -> None:
         self._operator_repo = operator_repo
         self._lead_repo = lead_repo
@@ -19,15 +13,9 @@ class LeadDistributionService:
         self._contact_repo = contact_repo
         self._operator_source_repo = operator_source_repo
 
-    def find_or_create_lead(
-        self,
-        external_id: str,
-        name: Optional[str] = None
-    ) -> Lead:
+    def find_or_create_lead(self, external_id: str, name: str | None = None) -> Lead:
         """Find lead for external_id or create new"""
-        existing = self._lead_repo.get_by_external_id(
-            external_id
-        )
+        existing = self._lead_repo.get_by_external_id(external_id)
         if existing:
             return existing
 
@@ -38,10 +26,7 @@ class LeadDistributionService:
         )
         return self._lead_repo.add(new_lead)
 
-    def select_operator_for_source(
-        self,
-        source_id: int
-    ) -> Optional[Operator]:
+    def select_operator_for_source(self, source_id: int) -> Operator | None:
         """Select opertor for source by weight"""
         available = self._get_available_operators(source_id)
 
@@ -60,8 +45,8 @@ class LeadDistributionService:
         self,
         external_lead_id: str,
         source_id: int,
-        message: Optional[str] = None,
-        lead_name: Optional[str] = None,
+        message: str | None = None,
+        lead_name: str | None = None,
     ) -> Contact:
         """Create contact: find/create lead, assign operator"""
         source = self._source_repo.get_by_id(source_id)
@@ -83,22 +68,20 @@ class LeadDistributionService:
 
         return self._contact_repo.add(contact)
 
-    def _get_available_operators(
-        self,
-        source_id: int
-    ) -> List[Tuple[Operator, int]]:
+    def _get_available_operators(self, source_id: int) -> list[tuple[Operator, int]]:
         """Get available operators with weights"""
         operator_sources = self._operator_source_repo.get_by_source_id(source_id)
         contacts = self._contact_repo.get_all()
 
-        result = list()
+        result = []
         for os in operator_sources:
             operator = self._operator_repo.get_by_id(os.operator_id)
             if not operator or not operator.is_active:
                 continue
 
             active_count = sum(
-                1 for c in contacts
+                1
+                for c in contacts
                 if c.operator_id == operator.id and c.status == ContactStatus.ACTIVE
             )
 

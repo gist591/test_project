@@ -1,10 +1,9 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class Operator:
-    id: Optional[int]
+    id: int | None
     name: str
     is_active: bool = True
     max_load: int = 10
