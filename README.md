@@ -1,5 +1,7 @@
 # Lead Distribution CRM
 
+Ссылка на тестовое: https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2F3%2BKzf67O3IV9LHojCtcN3DMVF1ZvcvEesrB4LAJmDv2UidgU9HnIK8BNtVH78KL3q%2FJ6bpmRyOJonT3VoXnDag%3D%3D&name=%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B5.pdf
+
 Mini-CRM для автоматического распределения лидов между операторами.
 
 Разработка данного тестового задания полностью по TDD, проект соответствует DDD и чистой архитектуре (Repository, FakeRepository вместо Mock'ов, DI и другое),
